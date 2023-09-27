@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<dictionary version="0.92" revision="417257">
+<lemmata>
+    <lemma id="339993" rev="339993">
+        <l t="сурьмянистее"><g v="COMP"/></l>
+        <f t="сурьмянистее"></f>
+        <f t="сурьмянистей"><g v="V-ej"/></f>
+        <f t="посурьмянистее"><g v="Cmp2"/></f>
+        <f t="посурьмянистей"><g v="Cmp2"/><g v="V-ej"/></f></lemma>
+</lemmata>
+<link_types>
+    <type id="1">ADJF-ADJS</type>
+</link_types>
+<links>
+    <link id="1" from="339993" to="339993" type="1"/>
+</links>
+</dictionary>

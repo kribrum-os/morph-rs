@@ -1,0 +1,17 @@
+/target
+/data/dict/*
+*dict.opcorpora.xml
+*annot.opcorpora.xml
+.vscode
+/data/result
+*python*
+*fst
+/benches/result/dict*
+/data/test/dict*
+Презентация*
+буря*
+different*
+*.json
+*queries*
+*pasha*
+bench_vanga*
