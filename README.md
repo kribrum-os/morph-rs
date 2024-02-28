@@ -24,6 +24,9 @@
 
 ### Создание словаря
 
+Инициализация морфологического анализатора требует словарь OpenCorpora, представленный [на сайте](https://opencorpora.org/dict.php),
+выходной каталог, где будут сохранены бинарные данные, и указание языка (на данный момент имеется только русский язык).
+
 ```rust
 let dict = MorphAnalyzer::create(dictionary, db, language).unwrap();
 let morph = MorphAnalyzer::init(dict).unwrap();
