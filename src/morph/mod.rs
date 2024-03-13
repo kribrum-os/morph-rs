@@ -1,59 +1,116 @@
 use smallvec::SmallVec;
 
 use crate::{
-    analyzer::Tag,
+    analyzer::{dictionary::LemmaDict, Tag},
     errors::DictionaryErr,
-    opencorpora::dictionary::{GramWord, Lemma},
+    morph::vanga::{LemmaVanga, VangaVariant},
+    opencorpora::dictionary::GramWord,
 };
+
+use self::grammemes::{Grammem, Other, ParteSpeech};
 
 /// Содержит типы хранимых граммем слов
 /// в виде `unit enum`-ов для упрощения хранения.
 pub mod grammemes;
+/// Модуль сборки данных для Вангования
+/// на основе имеющегося словаря.
+pub(crate) mod vanga;
 
-impl Lemma {
-    /// Вычленение тегов нормализованной формы слова.
-    pub(crate) fn normal_tags(&self) -> Result<Tag, DictionaryErr> {
-        let Lemma {
-            id, normal_form, ..
-        } = self;
+// Взято из кода Pymorphy2.
+/// Непродуктивность - это в т.ч. невозможность образовывать от данных граммем префиксным-постфиксным образом новые слова.
+/// Например, мы не можем образовать слово от междометия.
+pub(crate) const UNPRODUCTIVE: [Grammem; 8] = [
+    Grammem::ParteSpeech(ParteSpeech::Number),
+    Grammem::ParteSpeech(ParteSpeech::NounPronoun),
+    Grammem::ParteSpeech(ParteSpeech::Predicative),
+    Grammem::ParteSpeech(ParteSpeech::Preposition),
+    Grammem::ParteSpeech(ParteSpeech::Conjunction),
+    Grammem::ParteSpeech(ParteSpeech::Particle),
+    Grammem::ParteSpeech(ParteSpeech::Interjection),
+    Grammem::Other(Other::Pronominal),
+];
+
+#[macro_export]
+macro_rules! gram {
+    ( $x:expr ) => {{
+        $crate::morph::grammemes::ToGrammem::to_grammem($x)
+    }};
+}
+
+#[macro_export]
+macro_rules! grams {
+    ( $($x:expr),* $(,)?  ) => {
+        {
+            vec![$(
+                $crate::gram![$x],
+            )*]
+        }
+    };
+}
+
+#[test]
+fn test_gram() {
+    let grammemes = vec![
+        Grammem::ParteSpeech(ParteSpeech::Number),
+        Grammem::Other(Other::Pronominal),
+    ];
+
+    let grams = grams![ParteSpeech::Number, Other::Pronominal];
+
+    assert_eq!(gram!(ParteSpeech::Number), *grammemes.first().unwrap());
+    assert_eq!(grammemes, grams);
+}
+
+impl LemmaDict {
+    /// Вычленение первых граммем из леммы словаря.
+    /// Первые граммемы наследуются всем остальным формам слова.
+    pub(crate) fn first_tags(&self) -> Result<Tag, DictionaryErr> {
+        let LemmaDict { normal_form, .. } = self;
 
         match &normal_form.gram {
-            None => Err(DictionaryErr::LostNormalForm(*id)),
+            None => Err(DictionaryErr::LostFirstGrammemes(
+                normal_form.text.to_owned(),
+            )),
             Some(gram) => Ok(SmallVec::from_iter(gram.iter().map(|g| g.v))),
         }
     }
 
-    /// Вычленение тегов остальных форм слова.
+    /// Вычленение граммем остальных форм слова.
+    ///
+    /// Если к форме не было граммем, то вернется пустой вектор `Tag`.
     pub(crate) fn forms(forms: Vec<GramWord>) -> impl Iterator<Item = (String, Tag)> {
         forms.into_iter().map(|gram| match gram.gram {
-            None => (gram.text, Tag::from(vec![])),
+            None => (gram.text, SmallVec::from(vec![])),
             Some(grams) => {
                 let tags = SmallVec::from_iter(grams.iter().map(|gram| gram.v));
                 (gram.text, tags)
             }
         })
     }
+}
 
-    /// Вычленение всех форм слова для использования в стемминге (определении общего корня).
-    pub(crate) fn to_longest_common_substring(&self) -> Vec<String> {
-        let Lemma {
-            id: _,
-            normal_form,
-            forms,
-        } = self.clone();
+impl LemmaVanga {
+    /// Вычленение первых граммем из леммы словаря.
+    /// Первые граммемы наследуются всем остальным формам слова.
+    pub(crate) fn first_tags(&self) -> Result<Tag, DictionaryErr> {
+        let LemmaVanga { variants } = self;
 
-        if let Some(forms) = forms {
-            let len = forms.len() + 1;
-            let mut vec = Vec::with_capacity(len);
-            vec.push(normal_form.text);
-
-            for word in forms {
-                vec.push(word.text);
-            }
-
-            vec
-        } else {
-            vec![normal_form.text]
+        match variants.first() {
+            None => Err(DictionaryErr::EmptyVanga),
+            Some(VangaVariant { tag, .. }) => Ok(tag.to_owned()),
         }
+    }
+
+    /// Вычленение граммем остальных форм слова.
+    ///
+    /// Если к форме не было граммем, то вернется пустой вектор `Tag`.
+    pub(crate) fn forms(forms: Vec<GramWord>) -> impl Iterator<Item = (String, Tag)> {
+        forms.into_iter().map(|gram| match gram.gram {
+            None => (gram.text, SmallVec::from(vec![])),
+            Some(grams) => {
+                let tags = SmallVec::from_iter(grams.iter().map(|gram| gram.v));
+                (gram.text, tags)
+            }
+        })
     }
 }

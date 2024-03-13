@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<dictionary version="0.92" revision="417257">
+<lemmata>
+    <lemma id="32325" rev="32325"><l t="больше"><g v="ADVB"/></l><f t="больше"></f></lemma>
+    <lemma id="32445" rev="32445"><l t="большой"><g v="ADJF"/><g v="Qual"/></l><f t="большой"><g v="masc"/><g v="sing"/><g v="nomn"/></f><f t="большого"><g v="masc"/><g v="sing"/><g v="gent"/></f><f t="большому"><g v="masc"/><g v="sing"/><g v="datv"/></f><f t="большого"><g v="anim"/><g v="masc"/><g v="sing"/><g v="accs"/></f><f t="большой"><g v="inan"/><g v="masc"/><g v="sing"/><g v="accs"/></f><f t="большим"><g v="masc"/><g v="sing"/><g v="ablt"/></f><f t="большом"><g v="masc"/><g v="sing"/><g v="loct"/></f><f t="большая"><g v="femn"/><g v="sing"/><g v="nomn"/></f><f t="большой"><g v="femn"/><g v="sing"/><g v="gent"/></f><f t="большой"><g v="femn"/><g v="sing"/><g v="datv"/></f><f t="большую"><g v="femn"/><g v="sing"/><g v="accs"/></f><f t="большой"><g v="femn"/><g v="sing"/><g v="ablt"/></f><f t="большою"><g v="femn"/><g v="sing"/><g v="ablt"/><g v="V-oy"/></f><f t="большой"><g v="femn"/><g v="sing"/><g v="loct"/></f><f t="большое"><g v="neut"/><g v="sing"/><g v="nomn"/></f><f t="большого"><g v="neut"/><g v="sing"/><g v="gent"/></f><f t="большому"><g v="neut"/><g v="sing"/><g v="datv"/></f><f t="большое"><g v="neut"/><g v="sing"/><g v="accs"/></f><f t="большим"><g v="neut"/><g v="sing"/><g v="ablt"/></f><f t="большом"><g v="neut"/><g v="sing"/><g v="loct"/></f><f t="большие"><g v="plur"/><g v="nomn"/></f><f t="больших"><g v="plur"/><g v="gent"/></f><f t="большим"><g v="plur"/><g v="datv"/></f><f t="больших"><g v="anim"/><g v="plur"/><g v="accs"/></f><f t="большие"><g v="inan"/><g v="plur"/><g v="accs"/></f><f t="большими"><g v="plur"/><g v="ablt"/></f><f t="больших"><g v="plur"/><g v="loct"/></f></lemma>
+    <lemma id="32447" rev="32447"><l t="больше"><g v="COMP"/><g v="Qual"/></l><f t="больше"></f><f t="побольше"><g v="Cmp2"/></f></lemma>
+    <lemma id="161428" rev="161428"><l t="много"><g v="ADVB"/><g v="Prdx"/></l><f t="много"></f></lemma>
+</lemmata>
+<link_types>
+    <type id="2">ADJF-COMP</type>
+    <type id="26">ADVB-COMP</type>
+</link_types>
+    <links>
+        <link id="21506" from="32445" to="32447" type="2"/>
+        <link id="270766" from="161428" to="32447" type="26"/>
+
+    </links>
+</dictionary>

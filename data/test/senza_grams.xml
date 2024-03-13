@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf8" standalone="yes"?>
+<dictionary version="0.8" revision="403605">
+    <grammemes>
+        <grammeme parent="">POST</grammeme>
+        <grammeme parent="POST">NOUN</grammeme>
+        <grammeme parent="POST">VERB</grammeme>
+    </grammemes>
+    <lemmata>
+        <lemma id="165289" rev="165289">
+            <l t="мурыжиться"><g v="INFN"/><g v="impf"/><g v="intr"/></l>
+            <f t="мурыжиться"></f>
+        </lemma>
+        <lemma id="197979" rev="197979">
+            <l t="обобщаюсь"><g v="VERB"/><g v="impf"/><g v="intr"/></l>
+            <f t="обобщаюсь"><g v="sing"/><g v="1per"/><g v="pres"/><g v="indc"/></f>
+            <f t="обобщаемся"><g v="plur"/><g v="1per"/><g v="pres"/><g v="indc"/></f>
+            <f t="обобщаешься"><g v="sing"/><g v="2per"/><g v="pres"/><g v="indc"/></f>
+            <f t="обобщаетесь"><g v="plur"/><g v="2per"/><g v="pres"/><g v="indc"/></f>
+            <f t="обобщается"><g v="sing"/><g v="3per"/><g v="pres"/><g v="indc"/></f>
+            <f t="обобщаются"><g v="plur"/><g v="3per"/><g v="pres"/><g v="indc"/></f>
+            <f t="обобщался"><g v="masc"/><g v="sing"/><g v="past"/><g v="indc"/></f>
+            <f t="обобщалась"><g v="femn"/><g v="sing"/><g v="past"/><g v="indc"/></f>
+            <f t="обобщалось"><g v="neut"/><g v="sing"/><g v="past"/><g v="indc"/></f>
+            <f t="обобщались"><g v="plur"/><g v="past"/><g v="indc"/></f>
+            <f t="обобщайся"><g v="sing"/><g v="impr"/><g v="excl"/></f>
+            <f t="обобщайтесь"><g v="plur"/><g v="impr"/><g v="excl"/></f>
+        </lemma>
+        <lemma id="197980" rev="197980">
+            <l t="обобщаться"><g v="INFN"/><g v="impf"/><g v="intr"/></l>
+            <f t="обобщаться"></f>
+        </lemma>
+        <lemma id="143840" rev="143840">
+            <l t="крутовато"><g v="ADVB"/></l>
+            <f t="крутовато"></f>
+        </lemma>
+    </lemmata>
+    <link_types>
+        <type id="1">INFN-VERB</type>
+    </link_types>
+    <links>
+        <link id="132388" from="197980" to="197979" type="3"/>
+    </links>
+</dictionary>

@@ -1,6 +1,10 @@
 use allocative::Allocative;
 use serde::{Deserialize, Serialize};
 
+pub trait ToGrammem {
+    fn to_grammem(self) -> Grammem;
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -35,7 +39,7 @@ pub enum Grammem {
 impl Grammem {
     pub fn pos(&self) -> Option<ParteSpeech> {
         match self {
-            Grammem::ParteSpeech(p) => Some(p.to_owned()),
+            Grammem::ParteSpeech(p) => Some(*p),
             _ => None,
         }
     }
@@ -99,6 +103,12 @@ pub enum ParteSpeech {
     Interjection,
 }
 
+impl ToGrammem for ParteSpeech {
+    fn to_grammem(self) -> Grammem {
+        Grammem::ParteSpeech(self)
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative)]
 pub enum Form {
@@ -106,16 +116,52 @@ pub enum Form {
     Vanga(FVanga),
 }
 
+impl Form {
+    pub fn switch_vanga(self) -> Self {
+        match self {
+            Form::Word(w) => match w {
+                FWord::Normal(_) => Form::Vanga(FVanga::Normal),
+                FWord::Inizio(_) => Form::Vanga(FVanga::Inizio),
+                FWord::Different(_) => Form::Vanga(FVanga::Different),
+            },
+            v => v,
+        }
+    }
+
+    pub fn is_normal(&self) -> bool {
+        match self {
+            Form::Word(w) => matches!(w, FWord::Normal(_)),
+            Form::Vanga(v) => matches!(v, FVanga::Normal),
+        }
+    }
+
+    pub fn is_inizio(&self) -> bool {
+        match self {
+            Form::Word(w) => matches!(w, FWord::Inizio(_)),
+            Form::Vanga(v) => matches!(v, FVanga::Inizio),
+        }
+    }
+
+    pub fn id(&self) -> Option<u64> {
+        match self {
+            Form::Word(FWord::Normal(i)) => Some(*i),
+            Form::Word(FWord::Inizio(i)) => Some(*i),
+            Form::Word(FWord::Different(i)) => Some(*i),
+            _ => None,
+        }
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative)]
 pub enum FWord {
-    #[display(fmt = "Normalize {_0}")] // todo
+    #[display(fmt = "Normal {_0}")]
     Normal(u64),
     // Начальная форма, но не нормализованная.
     // К примеру, начальная форма деепричастия, у которого нормализованной формой, однако, является глагол.
-    // #[display(fmt = "Initio {_0}")] // todo release 0.2.0
-    // Inizio(u64),
-    #[display(fmt = "Not normalize {_0}")] // todo
+    #[display(fmt = "Inizio {_0}")]
+    Inizio(u64),
+    #[display(fmt = "Not normalize {_0}")]
     Different(u64),
 }
 
@@ -123,7 +169,9 @@ pub enum FWord {
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative)]
 pub enum FVanga {
     Normal,
-    // Inizio, // todo release 0.2.0
+    // Начальная форма, но не нормализованная.
+    // К примеру, начальная форма деепричастия, у которого нормализованной формой, однако, является глагол.
+    Inizio,
     Different,
 }
 
@@ -144,6 +192,12 @@ pub enum Person {
     PossibleImpersonal,
 }
 
+impl ToGrammem for Person {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Person(self)
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -158,6 +212,12 @@ pub enum Animacy {
     Both,
 }
 
+impl ToGrammem for Animacy {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Animacy(self)
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -169,6 +229,12 @@ pub enum Aspect {
     #[serde(rename = "impf")]
     /// Несовершенный
     Imperfetto,
+}
+
+impl ToGrammem for Aspect {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Aspect(self)
+    }
 }
 
 #[rustfmt::skip]
@@ -188,6 +254,21 @@ pub enum Number {
     PluraliaTantum,
 }
 
+impl ToGrammem for Number {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Number(self)
+    }
+}
+
+impl Number {
+    pub fn to_default(self) -> Self {
+        match self {
+            Number::Plural => Number::Singular,
+            otherwise => otherwise,
+        }
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -201,6 +282,12 @@ pub enum Transitivity {
     Intransitive,
 }
 
+impl ToGrammem for Transitivity {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Trans(self)
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -212,6 +299,12 @@ pub enum Tense {
     Present,
     #[serde(rename = "futr")]
     Future,
+}
+
+impl ToGrammem for Tense {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Tense(self)
+    }
 }
 
 #[rustfmt::skip]
@@ -259,6 +352,12 @@ pub enum Case {
     Loc2,
 }
 
+impl ToGrammem for Case {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Case(self)
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -283,6 +382,12 @@ pub enum Gender {
 
 }
 
+impl ToGrammem for Gender {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Gender(self)
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -294,6 +399,12 @@ pub enum Mood {
     #[serde(rename = "impr")]
     // Повелительное
     Imperativo,
+}
+
+impl ToGrammem for Mood {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Mood(self)
+    }
 }
 
 #[rustfmt::skip]
@@ -309,6 +420,12 @@ pub enum Voice {
     Passive,
 }
 
+impl ToGrammem for Voice {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Voice(self)
+    }
+}
+
 #[rustfmt::skip]
 #[derive(Debug, derive_more::Display, Copy, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[display(fmt = "{}", _0.display())]
@@ -320,6 +437,12 @@ pub enum Involvement {
     #[serde(rename = "excl")]
     /// Говорящий не включен в действие
     Excluso,
+}
+
+impl ToGrammem for Involvement {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Involvement(self)
+    }
 }
 
 #[rustfmt::skip]
@@ -456,4 +579,10 @@ pub enum Other {
     Hypothetical,
     #[serde(other)]
     Other, 
+}
+
+impl ToGrammem for Other {
+    fn to_grammem(self) -> Grammem {
+        Grammem::Other(self)
+    }
 }
